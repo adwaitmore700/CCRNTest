@@ -1,0 +1,3 @@
+export const REDUX_CONSTANTS = {
+    "GET_POSTS_ACTION" : "GET_POSTS_ACTION"
+}
