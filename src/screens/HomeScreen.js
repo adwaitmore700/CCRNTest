@@ -2,58 +2,56 @@ import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch, useSelector} from 'react-redux'
 
-import {GET_POSTS} from '../redux/actions/postsActions';
+import {GET_COUNTRY_DETAILS} from '../redux/actions/applicationActions';
+import { TextInput } from 'react-native-gesture-handler';
 
 class HomeScreen extends React.Component {
 
     constructor(props){
         super(props);
         this.state = {
-            pageNo:1,
-            loading:true
+            country:"",
+            showLoading:false
         }
     }
 
     componentDidMount(){
-        this.props.dispatch(GET_POSTS(this.state.pageNo));
+        
+    }
+
+    onInputTextChange =(country)=>{
+        this.setState({country})
+    }
+
+    onSubmitButtonClick = async ()=>{
+        //make api call
+        
+        if(this.state.country){
+            //this.setState({showLoading:true});
+            //this.props.dispatch(GET_COUNTRY_DETAILS(this.state.country));
+            this.props.navigation.navigate("CountryDetails",{countryName:this.state.country});
+            // if(){
+            //     alert("success");
+            //     //navigate
+            // }
+            // else{
+            //     alert("Failed");
+            //     //not navigate
+            // }
+            this.setState({showLoading:false});
+        }
     }
 
     render(){
-        return <View style={{flex:1,backgroundColor:'green'}}><Button title="Details" onPress={()=>{
-            //props.navigation.navigate("Details");
-            setLoading(false);
-            console.log(pageNo);
-            dispatch(GET_POSTS(pageNo));
-        }}></Button><FlatList
-                    data={this.props.posts}
-                    keyExtractor={(item) => item.key}
-                    renderItem={itemData => (
-                        <TouchableOpacity style={styles.card} onPress={() => {
-                            //navigateToDetails(itemData.item)
-                        }}>
-                            <Text style={styles.text}>
-                                Title: {itemData.item.title}
-                            </Text>
-                            <Text style={styles.text}>
-                                URL: {itemData.item.url}
-                            </Text>
-                            <Text style={styles.text}>
-                                Created At:  {new Date(itemData.item.created_at).toDateString()}
-                            </Text>
-                            <Text style={styles.text}>
-                                Author: {itemData.item.author}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                    onEndReached={() => {
-                        this.setState({pageNo:this.state.pageNo+1});
-                        this.props.dispatch(GET_POSTS(this.state.pageNo));
-                    }}
-                    onEndReachedThreshold={.5}
-                    numColumns={1}
-                />
-                {this.state.loading && <ActivityIndicator size="large" color="blue" />}
-            </View>;
+        return(
+        <View style={styles.container}>
+        <ActivityIndicator style={styles.loader} size='large' animating={this.state.showLoading}/>
+            <TextInput placeholder="Enter country" style={styles.inputText} onChangeText={this.onInputTextChange}></TextInput>
+            <TouchableOpacity disabled={this.state.country == ""} style={styles.submitBtn} onPress={this.onSubmitButtonClick}>
+                <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+        </View>);
+
     }
 
 }
@@ -126,32 +124,39 @@ class HomeScreen extends React.Component {
           </Text>
         </LinearGradient> */
 
-const mapStateToProps = state => {
-    return {
-      posts: state.app.posts,
-    };
-  };
-  
   // upgrade our component to become Redux-aware
-  export default connect(mapStateToProps)(HomeScreen);
+  export default connect()(HomeScreen);
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-        padding: 10
+    container:{
+        flex:1,
+        justifyContent:'flex-start',
+        alignItems:'center',
+        padding:15
     },
-    card: {
-        flex: 1,
-        width: "100%",
-        backgroundColor: "black",
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        margin: 5,
-        borderRadius: 10
+    loader:{
+        position:'absolute',
+        alignSelf:'center'
     },
-    text: {
-        color: 'white',
-        fontSize: 16,
-        paddingBottom: 5
+    inputText : {
+        alignSelf:'stretch',
+        height:60,
+        borderColor:'#000034',
+        borderWidth:1,
+        borderRadius:10,
+        fontSize:18,
+        marginBottom:15,
+        paddingHorizontal:10
+    },
+    submitBtn :{
+        backgroundColor:'#898889',
+        width:150,
+        paddingHorizontal:15,
+        paddingVertical:10
+    },
+    buttonText:{
+        fontSize:16,
+        color:'#fff',
+        textAlign:'center'
     }
 })
